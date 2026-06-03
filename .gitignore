@@ -1,0 +1,25 @@
+# Build folders
+bin/
+obj/
+
+# Node.js folders
+node_modules/
+npm-debug.log
+
+# VS Code / Visual Studio cache
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Local database files / JSON fallbacks
+users.json
+db/update_hash.sql
+
+# Environment / Secret files
+.env
+.env.local
+.env.*.local
+appsettings.Development.json

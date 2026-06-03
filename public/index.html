@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Portal - Login</title>
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for standard form icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Notification Toasts -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <div class="main-wrapper">
+        <!-- Auth Container -->
+        <div class="card auth-card" id="authCard">
+            <div class="card-header">
+                <h2>Portal Sign In</h2>
+                <p class="subtitle" id="cardSubtitle">Please sign in to access your dashboard</p>
+                
+                <div class="tab-header">
+                    <button class="tab-link active" id="tabLogin" onclick="switchTab('login')">Sign In</button>
+                    <button class="tab-link" id="tabRegister" onclick="switchTab('register')">Register Account</button>
+                </div>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form active" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="loginUsername">Username</label>
+                    <div class="input-control">
+                        <i class="fa-regular fa-user icon"></i>
+                        <input type="text" id="loginUsername" placeholder="Username" autocomplete="username">
+                    </div>
+                    <span class="error-msg" id="err-loginUsername"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <div class="input-control">
+                        <i class="fa-solid fa-lock icon"></i>
+                        <i class="fa-regular fa-eye-slash toggle-password" onclick="togglePassword('loginPassword')"></i>
+                        <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
+                    </div>
+                    <span class="error-msg" id="err-loginPassword"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="loginSubmitBtn">
+                    <span>Sign In</span>
+                </button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="registerForm" class="auth-form" onsubmit="handleRegister(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="regFullName">Full Name</label>
+                        <div class="input-control">
+                            <i class="fa-regular fa-address-card icon"></i>
+                            <input type="text" id="regFullName" placeholder="e.g. Jane Doe">
+                        </div>
+                        <span class="error-msg" id="err-regFullName"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="regDesignation">Designation</label>
+                        <div class="input-control">
+                            <i class="fa-solid fa-briefcase icon"></i>
+                            <input type="text" id="regDesignation" placeholder="e.g. Lead Engineer">
+                        </div>
+                        <span class="error-msg" id="err-regDesignation"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="regUsername">Username</label>
+                    <div class="input-control">
+                        <i class="fa-regular fa-user icon"></i>
+                        <input type="text" id="regUsername" placeholder="Choose a username" autocomplete="username">
+                    </div>
+                    <span class="error-msg" id="err-regUsername"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="regPassword">Password</label>
+                    <div class="input-control">
+                        <i class="fa-solid fa-lock icon"></i>
+                        <i class="fa-regular fa-eye-slash toggle-password" onclick="togglePassword('regPassword')"></i>
+                        <input type="password" id="regPassword" placeholder="Minimum 8 characters" autocomplete="new-password">
+                    </div>
+                    <span class="error-msg" id="err-regPassword"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="registerSubmitBtn">
+                    <span>Register Account</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Dashboard Container (Post-Login) -->
+        <div class="card dashboard-card" id="dashboardCard">
+            <div class="dashboard-header">
+                <div class="user-profile">
+                    <div class="avatar" id="userAvatar">JD</div>
+                    <div class="user-info">
+                        <h3 id="dashFullName">Jane Doe</h3>
+                        <span class="status-badge" id="dashStatus">Active</span>
+                    </div>
+                </div>
+                <button class="btn btn-outline" onclick="handleLogout()">Sign Out</button>
+            </div>
+
+            <div class="dashboard-content">
+                <div class="info-list">
+                    <div class="info-row">
+                        <span class="label">User ID</span>
+                        <span class="value" id="dashUserId">1001</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Username</span>
+                        <span class="value" id="dashUsername">janedoe</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Designation / Role</span>
+                        <span class="value" id="dashDesignation">Lead Engineer</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Registered On</span>
+                        <span class="value" id="dashCreatedDate">May 27, 2026</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

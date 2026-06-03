@@ -1,0 +1,57 @@
+@model Item
+@{
+    ViewData["Title"] = "Edit Item";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="main-card">
+            <div class="border-bottom pb-3 mb-4">
+                <h4 class="fw-bold mb-1"><i class="fa-regular fa-pen-to-square text-primary me-2"></i>Edit Item Master</h4>
+                <p class="text-muted small mb-0">Modify information for: <strong>@Model.ItemName</strong></p>
+            </div>
+
+            <form asp-action="Edit" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3 small"></div>
+                
+                <input type="hidden" asp-for="ItemID" />
+
+                <div class="mb-3">
+                    <label asp-for="ItemName" class="form-label">Item Name</label>
+                    <input asp-for="ItemName" class="form-control" />
+                    <span asp-validation-for="ItemName" class="text-danger small"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="UnitOfMeasure" class="form-label">Unit of Measure (UOM)</label>
+                        <input asp-for="UnitOfMeasure" class="form-control" />
+                        <span asp-validation-for="UnitOfMeasure" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="OpeningBalance" class="form-label">Opening Balance (Qty)</label>
+                        <input asp-for="OpeningBalance" class="form-control" type="number" min="0" />
+                        <span asp-validation-for="OpeningBalance" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="DetailedDescription" class="form-label">Detailed Description</label>
+                    <textarea asp-for="DetailedDescription" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="DetailedDescription" class="text-danger small"></span>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                    <a asp-action="Index" class="btn btn-light border">Cancel</a>
+                    <button type="submit" class="btn btn-custom-primary">Update Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js"></script>
+}

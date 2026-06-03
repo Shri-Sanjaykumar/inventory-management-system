@@ -1,0 +1,69 @@
+@model StockReceiptViewModel
+@{
+    ViewData["Title"] = "New Stock Receipt";
+    var maxDate = DateTime.Today.ToString("yyyy-MM-dd");
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="main-card">
+            <div class="border-bottom pb-3 mb-4">
+                <h4 class="fw-bold mb-1"><i class="fa-solid fa-plus text-primary me-2"></i>New Stock Receipt</h4>
+                <p class="text-muted small mb-0">Record materials delivered to construction sites</p>
+            </div>
+
+            <form asp-action="Create" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3 small"></div>
+
+                <div class="mb-3">
+                    <label asp-for="VendorID" class="form-label">Vendor (Supplier)</label>
+                    <select asp-for="VendorID" asp-items="Model.VendorsList" class="form-select">
+                        <option value="">-- Select Vendor --</option>
+                    </select>
+                    <span asp-validation-for="VendorID" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ProjectID" class="form-label">Project Site</label>
+                    <select asp-for="ProjectID" asp-items="Model.ProjectsList" class="form-select">
+                        <option value="">-- Select Project Site --</option>
+                    </select>
+                    <span asp-validation-for="ProjectID" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ItemID" class="form-label">Item / Material</label>
+                    <select asp-for="ItemID" asp-items="Model.ItemsList" class="form-select">
+                        <option value="">-- Select Material Item --</option>
+                    </select>
+                    <span asp-validation-for="ItemID" class="text-danger small"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label asp-for="ReceiptDate" class="form-label">Receipt Date</label>
+                        <!-- Enforce no future dates in the browser using max attribute -->
+                        <input asp-for="ReceiptDate" class="form-control" type="date" max="@maxDate" />
+                        <span asp-validation-for="ReceiptDate" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <label asp-for="Quantity" class="form-label">Quantity</label>
+                        <input asp-for="Quantity" class="form-control" type="number" min="1" placeholder="Enter quantity received" />
+                        <span asp-validation-for="Quantity" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                    <a asp-action="Index" class="btn btn-light border">Cancel</a>
+                    <button type="submit" class="btn btn-custom-primary">Save Receipt</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js"></script>
+}

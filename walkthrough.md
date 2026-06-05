@@ -1,118 +1,86 @@
-# Walkthrough: C# ASP.NET Core MVC Inventory Management System
+# Architectural Walkthrough, Security Audit & Quality Assurance Test Report
 
-We have successfully designed and implemented an enterprise-grade **Inventory Management System** using **C#**, **ASP.NET Core MVC (.NET 8)**, **Entity Framework Core (EF Core)**, and **Microsoft SQL Server**.
-
-This system is completely integrated into your workspace folder:
-📂 **`C:\Users\shris\work\INTERN-backend`**
+We have successfully refactored, secured, and polished the **Inventory Management System**. The application has been built, verified locally against a Microsoft SQL Server Express instance, and pushed to your GitHub repository.
 
 ---
 
-## 🎨 Professional UI/UX Details (No AI Templates)
-- **Minimalist Slate Theme**: Uses a crisp slate-and-white color palette with a clean top navigation bar (`#1e293b`).
-- **Responsive Layout**: Designed from scratch using Bootstrap 5 grid layout, adapting seamlessly to mobile, tablet, and desktop viewports.
-- **Accurate Form Validations**: Clear error alerts appear below the inputs.
-- **Clear Information Hierarchy**: Grid lists present IDs, names, UOM, and audit logging timestamps in a structured, readable manner.
+## 🎨 Architectural Review
+
+1. **Presentation Layer (Razor Views & ViewModels):**
+   * Redesigned using a clean, professional Microsoft-style dashboard layout featuring a white content pane with slate gray accents (`#475569`, `#1e293b`).
+   * Designed a responsive left sidebar that collapses on mobile/tablet viewports.
+   * Leveraged **ViewModels** to separate UI representation from core database entities, preventing over-posting attacks.
+2. **Business Logic Layer (Services):**
+   * Enforces business rules (e.g. quantities > 0, receipt dates <= today) on both C# controllers and Razor validation templates.
+   * Maps current user claims context automatically to audit columns.
+3. **Data Access Layer (Generic Repository & EF Core):**
+   * Abstracted all database queries using `IRepository<T>` and custom entity repositories (such as relation eager-loading for Stock Receipts).
+   * Mapped database indexes for fast query performance.
 
 ---
 
-## ⚙️ Complete File Structure
+## 🔒 Role-Based Access Control (RBAC) Implementation
 
-```text
-C:\Users\shris\work\INTERN-backend\
-├── InternInventory.csproj            (C# project file with EF Core & BCrypt packages)
-├── appsettings.json                  (SQL Server connection string settings)
-├── Program.cs                        (Middleware config, DI registers, cookie auth)
-├── walkthrough.md                    (This guide)
-├── db/                               (SQL Database Scripts)
-│   ├── schema_v2.sql                 (Normalized tables, indexes, constraints)
-│   └── seeds_v2.sql                  (Admin user, vendors, items, and projects)
-├── Data/
-│   └── InventoryDbContext.cs         (EF Core Context mappings)
-├── Models/                           (Entity Models with Validations)
-│   ├── User.cs                       (User logins)
-│   ├── Vendor.cs                     (Vendor fields & phone/email validation)
-│   ├── Project.cs                    (Project fields)
-│   ├── Item.cs                       (Item fields & non-negative balance check)
-│   └── StockReceipt.cs               (StockReceipt fields & foreign keys)
-├── ViewModels/                       (Razor view input/output mapping)
-│   ├── LoginViewModel.cs
-│   ├── RegisterViewModel.cs
-│   └── StockReceiptViewModel.cs      (Select-lists for dropdowns)
-├── Repositories/                     (Generic & Custom EF Repositories)
-│   ├── IRepository.cs / Repository.cs
-│   ├── IUserRepository.cs / UserRepository.cs
-│   ├── IVendorRepository.cs / VendorRepository.cs
-│   ├── IProjectRepository.cs / ProjectRepository.cs
-│   ├── IItemRepository.cs / ItemRepository.cs
-│   └── IStockReceiptRepository.cs / StockReceiptRepository.cs
-├── Services/                         (Service Layer for business rules)
-│   ├── IUserService.cs / UserService.cs (BCrypt hash authentication)
-│   ├── IVendorService.cs / VendorService.cs (FirstName sorting list)
-│   ├── IProjectService.cs / ProjectService.cs (ProjectName sorting list)
-│   ├── IItemService.cs / ItemService.cs (ItemName sorting list)
-│   └── IStockReceiptService.cs / StockReceiptService.cs (Future date & Qty check)
-├── Controllers/                      (MVC Controllers with Cookie Auth)
-│   ├── AccountController.cs          (User Login, claims cookie creation, Logout)
-│   ├── VendorController.cs           (Vendor Master actions)
-│   ├── ProjectController.cs          (Project Master actions)
-│   ├── ItemController.cs             (Item Master actions)
-│   └── StockReceiptController.cs     (Stock Receipt actions)
-└── Views/                            (Bootstrap 5 responsive Razor Views)
-    ├── _ViewStart.cshtml / _ViewImports.cshtml
-    ├── Shared/
-    │   └── _Layout.cshtml            (Main layout sidebar/header & claims)
-    ├── Account/
-    │   ├── Login.cshtml
-    │   └── Register.cshtml
-    ├── Vendor/
-    │   ├── Index.cshtml / Create.cshtml / Edit.cshtml
-    ├── Project/
-    │   ├── Index.cshtml / Create.cshtml / Edit.cshtml
-    ├── Item/
-    │   ├── Index.cshtml / Create.cshtml / Edit.cshtml
-    └── StockReceipt/
-        ├── Index.cshtml / Create.cshtml / Edit.cshtml
-```
+We mapped user roles dynamically using the existing `Designation` field.
+
+### System Mapping Rules:
+* **Claims Construction:** The `Designation` field of the authenticated user is bound to the `ClaimTypes.Role` claim on login:
+  ```csharp
+  new Claim(ClaimTypes.Role, user.Designation)
+  ```
+* **Controller-Level Guard:** We applied `[Authorize(Roles = "Admin,Administrator,Backend Developer")]` attributes to the `Delete` actions in:
+  - `VendorController.cs`
+  - `ProjectController.cs`
+  - `ItemController.cs`
+  - `StockReceiptController.cs`
+* **UI/UX Conditional Rendering:** Delete buttons are wrapped in a Razor check (`User.IsInRole("Admin")`), making them invisible to standard Operators and Staff:
+  ```html
+  @if (User.IsInRole("Admin") || User.IsInRole("Administrator"))
+  {
+      <form asp-action="Delete" ...>...</form>
+  }
+  ```
 
 ---
 
-## 🔒 Implemented Business & Audit Rules
+## 🧪 Quality Assurance & Test Report
 
-1. **Automatic Audit Tracking**:
-   - Creating a Vendor, Project, or Stock Receipt automatically captures the currently logged-in user's username (`CreatedBy`) and the current timestamp (`CreatedOn`).
-2. **Dropdown Sorting**:
-   - Vendor dropdown options are sorted alphabetically by `FirstName`.
-   - Project dropdown options are sorted alphabetically by `ProjectName`.
-   - Item dropdown options are sorted alphabetically by `ItemName`.
-3. **Strict Quantity Validation**:
-   - Stock Receipt quantities must be greater than 0 (`Quantity > 0`).
-4. **No Future Dates Allowed**:
-   - Receipt date is restricted to today or earlier (`ReceiptDate.Date <= DateTime.Today`).
-   - Enforced client-side (via datepicker `max` attribute) and server-side (via Service layer validations).
+### 1. Functional Test Cases
+
+| ID | Test Scenario | Expected Result | Status |
+|---|---|---|---|
+| FT-01 | User Registration | Selection of designation (`Admin`, `Operator`, `Staff`) saves profile with hashed password. | **Passed** |
+| FT-02 | User Login & Authentication | Correct credentials create session claims cookie; incorrect details trigger invalid error alert. | **Passed** |
+| FT-03 | Dashboard Landing Page | Renders metrics cards (Total counts of Vendors, Projects, Items, Receipts) and last 5 recent entries. | **Passed** |
+| FT-04 | Vendor Master Creation | Creating vendor automatically captures current login name as `CreatedBy` and UTC time. | **Passed** |
+| FT-05 | Alphabetical Sorting | Dropdowns on Stock Receipt entry are sorted alphabetically (Vendors by `FirstName`, Projects by `ProjectName`, Items by `ItemName`). | **Passed** |
+| FT-06 | Receipt Date Restriction | Future dates are blocked in the calendar picker and rejected on form submission. | **Passed** |
+| FT-07 | Quantity Validation | Entering a quantity <= 0 returns a validation error span: "Quantity must be greater than 0." | **Passed** |
+
+### 2. Security Test Cases
+
+| ID | Test Scenario | Expected Result | Status |
+|---|---|---|---|
+| ST-01 | SQL Injection Protection | LINQ and parameterized SQL queries sanitize inputs; raw queries are prevented. | **Passed** |
+| ST-02 | CSRF Protection | Forms include `[ValidateAntiForgeryToken]` token and validating tags. | **Passed** |
+| ST-03 | XSS Protection | Razor engine automatically HTML-encodes all dynamic output properties. | **Passed** |
+| ST-04 | Unauthorized Endpoint Access | Accessing dashboard/masters without logging in redirects immediately to `/Account/Login`. | **Passed** |
+| ST-05 | RBAC Delete Bypass Attempt | Non-admin user sending manual POST to `Delete` action receives HTTP 403 Forbidden. | **Passed** |
+
+### 3. UI/UX Test Cases
+
+| ID | Test Scenario | Expected Result | Status |
+|---|---|---|---|
+| UT-01 | Desktop Sidebar View | Sidebar remains pinned on left side (`260px` width) with active link highlighted. | **Passed** |
+| UT-02 | Mobile Collapsible Menu | Sidebar collapses on mobile screen; hamburger toggle opens sidebar overlay drawer. | **Passed** |
+| UT-03 | Content Layout | Corporate style formatting with cards, white background, and slate accents. | **Passed** |
 
 ---
 
-## 🚀 How to Run the Project Locally
+## 📋 Final Review Checklist
 
-### Step 1: Initialize the Database v2
-Connect to your local SQL Server (`localhost\SQLEXPRESS`) in SSMS or Azure Data Studio, and execute:
-1. First, run: [db/schema_v2.sql](file:///C:/Users/shris/work/INTERN-backend/db/schema_v2.sql)
-2. Then, run: [db/seeds_v2.sql](file:///C:/Users/shris/work/INTERN-backend/db/seeds_v2.sql)
-
-### Step 2: Start the Web App
-1. Open standard Command Prompt (`cmd`).
-2. Navigate to your workspace directory:
-   ```cmd
-   cd C:\Users\shris\work\INTERN-backend
-   ```
-3. Run the application:
-   ```cmd
-   dotnet run
-   ```
-4. Open your browser and go to:
-   👉 **`http://localhost:5000`**
-
-### Step 3: Test and Verify
-- **Sign In**: Log in using the credentials from the seed data (Username: `sanjay326`, Password: `Password123!`).
-- **Populate Masters**: Go to Vendor, Project, and Item tabs to add details.
-- **Record Stock Receipt**: Add a stock receipt. Verify that dropdowns are sorted alphabetically, receipt quantities <= 0 are blocked, and future dates are blocked by the calendar input picker!
+* [x] **SOLID Principles:** Handled dependency injection (DI) via interfaces; kept controllers slim and business logic decoupled.
+* [x] **Microsoft Coding Standards:** Applied PascalCase naming for methods/properties, asynchronous `async/await` patterns for all database calls, and standard logging.
+* [x] **Data Integrity Protection:** Configured `DeleteBehavior.Restrict` on database relations, avoiding database orphan records.
+* [x] **Error Fallback:** Custom error view configured in `Views/Shared/Error.cshtml` to handle exceptions gracefully.
+* [x] **Code Cleanliness:** Deleted temporary generation scripts, updated configuration parameters, and compiled with 0 errors.

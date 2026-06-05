@@ -216,6 +216,7 @@ namespace InternInventory.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Administrator,Backend Developer")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {

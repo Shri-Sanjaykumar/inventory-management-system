@@ -86,11 +86,14 @@
                                     <a asp-action="Edit" asp-route-id="@item.StockReceiptID" class="btn btn-sm btn-outline-secondary" title="Edit Receipt">
                                         <i class="fa-regular fa-pen-to-square"></i>
                                     </a>
-                                    <form asp-action="Delete" asp-route-id="@item.StockReceiptID" method="post" onsubmit="return confirm('Are you sure you want to delete this stock receipt?');" style="display:inline;">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Receipt">
-                                            <i class="fa-regular fa-trash-can"></i>
-                                        </button>
-                                    </form>
+                                    @if (User.IsInRole("Admin") || User.IsInRole("Administrator") || User.IsInRole("Backend Developer"))
+                                    {
+                                        <form asp-action="Delete" asp-route-id="@item.StockReceiptID" method="post" onsubmit="return confirm('Are you sure you want to delete this stock receipt?');" style="display:inline;">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Receipt">
+                                                <i class="fa-regular fa-trash-can"></i>
+                                            </button>
+                                        </form>
+                                    }
                                 </div>
                             </td>
                         </tr>

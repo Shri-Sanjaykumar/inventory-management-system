@@ -26,7 +26,7 @@ namespace InternInventory.Controllers
         {
             if (User.Identity?.IsAuthenticated == true)
             {
-                return RedirectToAction("Index", "StockReceipt");
+                return RedirectToAction("Index", "Dashboard");
             }
             ViewData["ReturnUrl"] = returnUrl;
             return View();
@@ -55,6 +55,7 @@ namespace InternInventory.Controllers
                 {
                     new Claim(ClaimTypes.Name, user.Username),
                     new Claim(ClaimTypes.GivenName, user.FullName),
+                    new Claim(ClaimTypes.Role, user.Designation),
                     new Claim("Designation", user.Designation)
                 };
 
@@ -76,7 +77,7 @@ namespace InternInventory.Controllers
                 {
                     return Redirect(returnUrl);
                 }
-                return RedirectToAction("Index", "StockReceipt");
+                return RedirectToAction("Index", "Dashboard");
             }
             catch (Exception ex)
             {

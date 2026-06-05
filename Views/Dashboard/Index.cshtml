@@ -1,0 +1,158 @@
+@model IEnumerable<InternInventory.Models.StockReceipt>
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container-fluid py-4">
+    <!-- Welcome Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div>
+            <h1 class="h3 fw-bold text-slate-800 mb-0">Overview</h1>
+            <p class="text-muted mb-0 small">Welcome back, <strong class="text-dark">@User.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value</strong> (@User.FindFirst("Designation")?.Value)</p>
+        </div>
+        <div>
+            <span class="badge bg-slate-200 text-slate-700 px-3 py-2 rounded-pill small">
+                <i class="fa-regular fa-calendar me-1"></i> @DateTime.Today.ToString("MMMM dd, yyyy")
+            </span>
+        </div>
+    </div>
+
+    <!-- Summary Cards Grid -->
+    <div class="row g-4 mb-5">
+        <!-- Vendors Card -->
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card shadow-sm border-0 h-100 bg-white">
+                <div class="card-body p-4 d-flex align-items-center">
+                    <div class="rounded-3 bg-slate-100 p-3 me-3 text-slate-600">
+                        <i class="fa-solid fa-truck-field fa-2xl"></i>
+                    </div>
+                    <div>
+                        <h6 class="card-subtitle text-muted mb-1 small text-uppercase fw-semibold tracking-wider">Total Vendors</h6>
+                        <h3 class="card-title mb-0 fw-bold text-slate-800">@ViewBag.TotalVendors</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Projects Card -->
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card shadow-sm border-0 h-100 bg-white">
+                <div class="card-body p-4 d-flex align-items-center">
+                    <div class="rounded-3 bg-slate-100 p-3 me-3 text-slate-600">
+                        <i class="fa-solid fa-diagram-project fa-2xl"></i>
+                    </div>
+                    <div>
+                        <h6 class="card-subtitle text-muted mb-1 small text-uppercase fw-semibold tracking-wider">Total Projects</h6>
+                        <h3 class="card-title mb-0 fw-bold text-slate-800">@ViewBag.TotalProjects</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Items Card -->
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card shadow-sm border-0 h-100 bg-white">
+                <div class="card-body p-4 d-flex align-items-center">
+                    <div class="rounded-3 bg-slate-100 p-3 me-3 text-slate-600">
+                        <i class="fa-solid fa-box-open fa-2xl"></i>
+                    </div>
+                    <div>
+                        <h6 class="card-subtitle text-muted mb-1 small text-uppercase fw-semibold tracking-wider">Total Items</h6>
+                        <h3 class="card-title mb-0 fw-bold text-slate-800">@ViewBag.TotalItems</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stock Receipts Card -->
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card shadow-sm border-0 h-100 bg-white">
+                <div class="card-body p-4 d-flex align-items-center">
+                    <div class="rounded-3 bg-slate-100 p-3 me-3 text-slate-600">
+                        <i class="fa-solid fa-receipt fa-2xl"></i>
+                    </div>
+                    <div>
+                        <h6 class="card-subtitle text-muted mb-1 small text-uppercase fw-semibold tracking-wider">Stock Receipts</h6>
+                        <h3 class="card-title mb-0 fw-bold text-slate-800">@ViewBag.TotalStockReceipts</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity & Quick Actions -->
+    <div class="row g-4">
+        <!-- Recent Activity Table -->
+        <div class="col-12 col-xl-8">
+            <div class="card shadow-sm border-0 bg-white">
+                <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0 text-slate-800">Recent Stock Receipts</h5>
+                    <a asp-controller="StockReceipt" asp-action="Index" class="btn btn-sm btn-outline-secondary">
+                        View All <i class="fa-solid fa-angle-right ms-1"></i>
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="px-4 py-3 small text-uppercase text-muted fw-semibold">Receipt ID</th>
+                                    <th class="py-3 small text-uppercase text-muted fw-semibold">Vendor</th>
+                                    <th class="py-3 small text-uppercase text-muted fw-semibold">Project</th>
+                                    <th class="py-3 small text-uppercase text-muted fw-semibold">Item</th>
+                                    <th class="py-3 small text-uppercase text-muted fw-semibold">Date</th>
+                                    <th class="px-4 py-3 small text-uppercase text-muted fw-semibold text-end">Qty</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.Any())
+                                {
+                                    foreach (var receipt in Model)
+                                    {
+                                        <tr>
+                                            <td class="px-4 py-3 fw-bold text-slate-700">#@receipt.StockReceiptID</td>
+                                            <td class="py-3">@(receipt.Vendor != null ? $"{receipt.Vendor.FirstName} {receipt.Vendor.LastName}" : "Unknown")</td>
+                                            <td class="py-3">@(receipt.Project != null ? receipt.Project.ProjectName : "Unknown")</td>
+                                            <td class="py-3">@(receipt.Item != null ? receipt.Item.ItemName : "Unknown")</td>
+                                            <td class="py-3 text-muted">@receipt.ReceiptDate.ToString("yyyy-MM-dd")</td>
+                                            <td class="px-4 py-3 text-end fw-bold text-slate-800">@receipt.Quantity</td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4 text-muted">No stock receipts recorded yet.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions Panel -->
+        <div class="col-12 col-xl-4">
+            <div class="card shadow-sm border-0 bg-white h-100">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="fw-bold mb-0 text-slate-800">Quick Operations</h5>
+                </div>
+                <div class="card-body p-4 d-flex flex-column gap-3">
+                    <a asp-controller="StockReceipt" asp-action="Create" class="btn btn-primary py-2 d-flex align-items-center justify-content-center">
+                        <i class="fa-solid fa-circle-plus me-2"></i> New Stock Receipt
+                    </a>
+                    <a asp-controller="Vendor" asp-action="Create" class="btn btn-outline-secondary py-2 d-flex align-items-center justify-content-center">
+                        <i class="fa-solid fa-plus me-2"></i> Add Vendor
+                    </a>
+                    <a asp-controller="Project" asp-action="Create" class="btn btn-outline-secondary py-2 d-flex align-items-center justify-content-center">
+                        <i class="fa-solid fa-plus me-2"></i> Add Project
+                    </a>
+                    <a asp-controller="Item" asp-action="Create" class="btn btn-outline-secondary py-2 d-flex align-items-center justify-content-center">
+                        <i class="fa-solid fa-plus me-2"></i> Add Item
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

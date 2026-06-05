@@ -24,7 +24,11 @@
 
                     <div class="col-md-6 mb-3">
                         <label asp-for="Designation" class="form-label">Designation / Role</label>
-                        <input asp-for="Designation" class="form-control" placeholder="Lead Architect" />
+                        <select asp-for="Designation" class="form-select">
+                            <option value="Admin">Admin</option>
+                            <option value="Operator">Operator</option>
+                            <option value="Staff">Staff</option>
+                        </select>
                         <span asp-validation-for="Designation" class="text-danger small"></span>
                     </div>
                 </div>
